@@ -1,4 +1,5 @@
 use std::io::Error;
+use std::time::Duration;
 use tokio_serial::{Serial, SerialPortSettings};
 
 use tokio_modbus::prelude::*;
@@ -101,6 +102,7 @@ impl SunEdgeClient {
     pub async fn from<'a>(tty_path : &str, slave_address : u8, baud_rate : u32) -> Result<SunEdgeClient, Error> {
         let mut settings = SerialPortSettings::default();
         settings.baud_rate = baud_rate;
+        settings.timeout = Duration::from_secs(5);
 
         let port = Serial::from_path(tty_path, &settings)?;    
         let slave = Slave::from(slave_address);
@@ -119,12 +121,19 @@ impl SunEdgeClient {
 
 #[cfg(test)]
 mod tests {
-    //use super::*;
-    #[test]
+    use super::*;
+
+    macro_rules! aw {
+        ($e:expr) => {
+            tokio_test::block_on($e)
+        };
+    }
+
+    
+
+    #[test]    
     fn it_works() {        
-        //let client = SunEdgeClient::from("/dev/tty_USB0", 2, 19200);
-        //let sun_edge_register = SunEdgeRegister::new();
-        //let result = client.read_register(sun_edge_register.I_AC_SpannungCA).await();
-        assert_eq!(2 + 2, 4);
+        let client = aw!(SunEdgeClient::from("/dev/tty_USB0", 2, 19200));
+        let sun_edge_register = SunEdgeRegister::new();        
     }
 }
