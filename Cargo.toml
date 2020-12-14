@@ -8,5 +8,4 @@ edition = "2018"
 
 [dependencies]
 tokio-modbus = { version = "*", default-features = false, features = ["rtu"] }
-tokio = { version = "0.3", features = ["full"] }
 tokio-serial = "4.3.3"
