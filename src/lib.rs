@@ -12,7 +12,7 @@ pub struct Register {
 
 #[allow(non_snake_case)]
 #[allow(dead_code)]
-pub struct SunEdgeRegister {
+pub struct SolarEdgeRegister {
     pub C_SunSpec_DID : Register,
     pub C_SunSpec_Lenght : Register,
     pub I_AC_Strom : Register,
@@ -51,9 +51,9 @@ pub struct SunEdgeRegister {
     pub I_Status_Anbieter : Register,
 }
 
-impl SunEdgeRegister {
-    pub fn new() -> SunEdgeRegister {
-        SunEdgeRegister {
+impl SolarEdgeRegister {
+    pub fn new() -> SolarEdgeRegister {
+        SolarEdgeRegister {
             C_SunSpec_DID : Register {address : 40070, size: 1},
             C_SunSpec_Lenght : Register {address : 40071, size : 1},
             I_AC_Strom : Register {address : 40072, size : 1},
@@ -94,12 +94,12 @@ impl SunEdgeRegister {
     }    
 }
 
-pub struct SunEdgeClient {    
+pub struct SolarEdgeClient {    
     ctx : Context,    
 }
 
-impl SunEdgeClient {
-    pub async fn from<'a>(tty_path : &str, slave_address : u8, baud_rate : u32) -> Result<SunEdgeClient, Error> {
+impl SolarEdgeClient {
+    pub async fn from<'a>(tty_path : &str, slave_address : u8, baud_rate : u32) -> Result<SolarEdgeClient, Error> {
         let mut settings = SerialPortSettings::default();
         settings.baud_rate = baud_rate;
         settings.timeout = Duration::from_secs(5);
@@ -108,7 +108,7 @@ impl SunEdgeClient {
         let slave = Slave::from(slave_address);
         let ctx = rtu::connect_slave(port, slave).await?;  
         
-        Ok(SunEdgeClient{
+        Ok(SolarEdgeClient{
             ctx,
         })
     }
@@ -133,7 +133,7 @@ mod tests {
 
     #[test]    
     fn it_works() {        
-        let client = aw!(SunEdgeClient::from("/dev/tty_USB0", 2, 19200));
-        let sun_edge_register = SunEdgeRegister::new();        
+        let client = aw!(SolarEdgeClient::from("/dev/tty_USB0", 2, 19200));
+        let sun_edge_register = SolarEdgeRegister::new();        
     }
 }
