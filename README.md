@@ -1,2 +1,2 @@
 # sun_edge_modbus
-modbus client to communicate with a sun edge device
+modbus client to communicate with a solaredge device
