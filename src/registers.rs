@@ -22,6 +22,7 @@ pub struct SolarEdgeCommonRegister {
     pub C_Seriennummer : Register,
     pub C_Device_adresse : Register,        
 }
+
 impl SolarEdgeCommonRegister {
     pub fn new() -> SolarEdgeCommonRegister {
         SolarEdgeCommonRegister {
