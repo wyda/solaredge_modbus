@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Register {
     pub address : u16,
     pub size : u16
@@ -9,9 +10,16 @@ pub enum IStatus {
     IStatusMPPT = 4,
 }
 
+pub trait SolarEdgeRegister {
+    fn new() -> Self;
+    fn get_block_register(&self) -> Register;
+    fn get_register_range(&self, start : &Register, stop : &Register) -> Register;
+}
+
 
 #[allow(non_snake_case)]
 #[allow(dead_code)]
+#[derive(Debug)]
 pub struct SolarEdgeCommonRegister {
     pub C_SunSpec_ID : Register,
     pub C_SunSpec_DID : Register,
@@ -23,8 +31,8 @@ pub struct SolarEdgeCommonRegister {
     pub C_Device_adresse : Register,        
 }
 
-impl SolarEdgeCommonRegister {
-    pub fn new() -> SolarEdgeCommonRegister {
+impl SolarEdgeRegister for SolarEdgeCommonRegister {
+    fn new() -> SolarEdgeCommonRegister {
         SolarEdgeCommonRegister {
             C_SunSpec_ID : Register {address : 40001, size: 2},
             C_SunSpec_DID : Register {address : 40003, size : 1},
@@ -36,6 +44,28 @@ impl SolarEdgeCommonRegister {
             C_Device_adresse : Register {address : 40069, size : 1},                
         }
     }    
+
+    fn get_block_register(&self) -> Register {
+        Register{
+            address : 40001,
+            size : 61
+        }
+    }
+
+    fn get_register_range(&self, start : &Register, stop : &Register) -> Register {
+        if start.address < stop.address {
+            Register{
+                address : start.address,
+                size : stop.address + stop.size - start.address
+            }
+        }    
+        else{
+            Register{
+                address : stop.address,
+                size : start.address + start.size - stop.address
+            }
+        }    
+    }
 }
 
 
@@ -80,8 +110,8 @@ pub struct SolarEdgeInverterRegister {
     pub I_Status_Anbieter : Register,
 }
 
-impl SolarEdgeInverterRegister {
-    pub fn new() -> SolarEdgeInverterRegister {
+impl SolarEdgeRegister for SolarEdgeInverterRegister {
+    fn new() -> SolarEdgeInverterRegister {
         SolarEdgeInverterRegister {
             C_SunSpec_DID : Register {address : 40070, size: 1},
             C_SunSpec_Lenght : Register {address : 40071, size : 1},
@@ -121,5 +151,27 @@ impl SolarEdgeInverterRegister {
             I_Status_Anbieter : Register {address : 40109, size : 1},
         }
     }    
+
+    fn get_block_register(&self) -> Register {
+        Register{
+            address : 40070,
+            size : 37
+        }
+    }
+
+    fn get_register_range(&self, start : &Register, stop : &Register) -> Register {
+        if start.address < stop.address {
+            Register{
+                address : start.address,
+                size : stop.address + stop.size - start.address
+            }
+        }    
+        else{
+            Register{
+                address : stop.address,
+                size : start.address + start.size - stop.address
+            }
+        }    
+    }
 }
 
