@@ -34,3 +34,26 @@ impl SolarEdgeClient {
         Ok(self.ctx.read_holding_registers(register.address, register.size).await?)    
     }
 }
+
+pub struct SolarEdgeClientSync {    
+    ctx : sync::Context,    
+}
+
+impl SolarEdgeClientSync {
+    pub fn from<'a>(tty_path : &str, slave_address : u8, baud_rate : u32) -> Result<SolarEdgeClientSync, Error> {
+        let mut settings = SerialPortSettings::default();
+        settings.baud_rate = baud_rate;
+        settings.timeout = Duration::from_secs(5);
+
+        let slave = Slave::from(slave_address);        
+        let ctx = sync::rtu::connect_slave(tty_path, &settings, slave)?;
+        
+        Ok(SolarEdgeClientSync{
+            ctx,
+        })
+    }
+
+    pub fn read_register(& mut self, register : Register) -> Result<Vec<u16>, Error> {        
+        Ok(self.ctx.read_holding_registers(register.address, register.size)?)    
+    }
+}
