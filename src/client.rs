@@ -1,5 +1,4 @@
-use std::io::Error as Io_Error;
-use std::{error::Error, fmt};
+use std::io::{Error, ErrorKind};
 use std::time::Duration;
 use std::net::SocketAddr;
 use tokio_serial::{Serial, SerialPortSettings};
@@ -7,22 +6,14 @@ use tokio_serial::{Serial, SerialPortSettings};
 use tokio_modbus::prelude::*;
 use tokio_modbus::client::Context;
 
-
 use crate::registers::Register;
-
-#[derive(Debug)]
-#[derive(Display)]
-struct Thing;
-
-impl std::error::Error for Thing {}
-
 
 pub struct SolarEdgeClient {    
     ctx : Context,    
 }
 
 impl SolarEdgeClient {
-    pub async fn rtu_from<'a>(tty_path : &str, slave_address : u8, baud_rate : u32) -> Result<SolarEdgeClient, Io_Error> {
+    pub async fn rtu_from<'a>(tty_path : &str, slave_address : u8, baud_rate : u32) -> Result<SolarEdgeClient, Error> {
         let mut settings = SerialPortSettings::default();
         settings.baud_rate = baud_rate;
         settings.timeout = Duration::from_secs(5);
@@ -36,15 +27,15 @@ impl SolarEdgeClient {
         })
     }
 
-    pub async fn tcp_from<'a>(ip : &str, port : &str) -> Result<SolarEdgeClient, Io_Error> {        
+    pub async fn tcp_from<'a>(ip : &str, port : &str) -> Result<SolarEdgeClient, Error> {        
         let mut address = String::from(ip);
         address.push_str(":");
         address.push_str(port);
         
         let socket_addr : SocketAddr =  match address.parse() {
-            Ok(p) => p
-            Err() => {Err(Error)}
-        }
+            Ok(p) => p,
+            Err(e) => return Err(Error::new(ErrorKind::Other, e))
+        };
 
         let ctx = tcp::connect(socket_addr).await?;        
 
@@ -53,7 +44,7 @@ impl SolarEdgeClient {
         })
     }
 
-    pub async fn read_register(& mut self, register : Register) -> Result<Vec<u16>, Io_Error> {        
+    pub async fn read_register(& mut self, register : &Register) -> Result<Vec<u16>, Error> {        
         Ok(self.ctx.read_holding_registers(register.address, register.size).await?)    
     }
 }
@@ -63,7 +54,7 @@ pub struct SolarEdgeClientSync {
 }
 
 impl SolarEdgeClientSync {
-    pub fn rtu_from<'a>(tty_path : &str, slave_address : u8, baud_rate : u32) -> Result<SolarEdgeClientSync, Io_Error> {
+    pub fn rtu_from<'a>(tty_path : &str, slave_address : u8, baud_rate : u32) -> Result<SolarEdgeClientSync, Error> {
         let mut settings = SerialPortSettings::default();
         settings.baud_rate = baud_rate;
         settings.timeout = Duration::from_secs(5);
@@ -76,7 +67,24 @@ impl SolarEdgeClientSync {
         })
     }
 
-    pub fn read_register(& mut self, register : Register) -> Result<Vec<u16>, Io_Error> {        
+    pub fn tcp_from<'a>(ip : &str, port : &str) -> Result<SolarEdgeClientSync, Error> {        
+        let mut address = String::from(ip);
+        address.push_str(":");
+        address.push_str(port);
+        
+        let socket_addr : SocketAddr =  match address.parse() {
+            Ok(p) => p,
+            Err(e) => return Err(Error::new(ErrorKind::Other, e))
+        };
+
+        let ctx = client::sync::tcp::connect(socket_addr)?;     
+
+        Ok(SolarEdgeClientSync{
+            ctx,
+        })
+    }
+
+    pub fn read_register(& mut self, register : &Register) -> Result<Vec<u16>, Error> {        
         Ok(self.ctx.read_holding_registers(register.address, register.size)?)    
     }
 }

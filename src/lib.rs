@@ -4,7 +4,7 @@ pub mod client;
 #[cfg(test)]
 mod tests {    
     use crate::registers::{SolarEdgeInverterRegister, SolarEdgeCommonRegister, SolarEdgeRegister, Register};
-    //use crate::client::SolarEdgeClient;
+    //use crate::client::{SolarEdgeClient, SolarEdgeClientSync};
 /*
     macro_rules! aw {
         ($e:expr) => {
@@ -50,8 +50,13 @@ mod tests {
 
     #[test]    
     fn client_test() {       
-        //ToDo test server       
-         //let mut client = aw!(SolarEdgeClient::from("/dev/tty_USB0", 2, 19200));    
-        //let value = aw!(client.read_register(solaredge_common_register_range));
+        //ToDo create test server for client test  
+        //let solaredge_common_register = SolarEdgeCommonRegister::new();  
+        //let solaredge_common_register_range = solaredge_common_register.get_register_range(&solaredge_common_register.C_Device_adresse, &solaredge_common_register.C_Seriennummer);
+        //let mut client = aw!(SolarEdgeClient::tcp_from("192.168.0.111", "5555")).unwrap(); 
+        //let value = aw!(client.read_register(&solaredge_common_register_range));
+           
+        //let mut client = aw!(SolarEdgeClient::rtu_from("/dev/tty_USB0", 2, 19200)).unwrap();    
+        //let value = aw!(client.read_register(&solaredge_common_register_range));
     }
 }
