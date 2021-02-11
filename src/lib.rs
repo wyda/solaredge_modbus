@@ -4,14 +4,14 @@ pub mod client;
 #[cfg(test)]
 mod tests {    
     use crate::registers::{SolarEdgeInverterRegister, SolarEdgeCommonRegister, SolarEdgeRegister, Register};
-    use crate::client::SolarEdgeClient;
-
+    //use crate::client::SolarEdgeClient;
+/*
     macro_rules! aw {
         ($e:expr) => {
             tokio_test::block_on($e)
         };
     }
-
+*/
     #[test]    
     fn get_block_register_test() {                
 
@@ -49,7 +49,8 @@ mod tests {
     }
 
     #[test]    
-    fn client_test() {              
+    fn client_test() {       
+        //ToDo test server       
          //let mut client = aw!(SolarEdgeClient::from("/dev/tty_USB0", 2, 19200));    
         //let value = aw!(client.read_register(solaredge_common_register_range));
     }
