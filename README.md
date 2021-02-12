@@ -1,3 +1,3 @@
 # solaredge_modbus
-modbus client to communicate with a solaredge device.
+modbus client to communicate with a solaredge inverter.
 wip
